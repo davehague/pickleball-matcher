@@ -1,0 +1,22 @@
+{
+  "name": "nuxt-app",
+  "private": true,
+  "type": "module",
+  "overrides": {
+    "vue": "latest"
+  },
+  "scripts": {
+    "build": "nuxt build",
+    "dev": "nuxt dev",
+    "generate": "nuxt generate",
+    "preview": "nuxt preview",
+    "postinstall": "nuxt prepare"
+  },
+  "dependencies": {
+    "@pinia/nuxt": "^0.5.3",
+    "@supabase/supabase-js": "^2.45.1",
+    "nuxt": "^3.12.4",
+    "pinia": "^2.2.1",
+    "vue": "latest"
+  }
+}
