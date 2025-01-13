@@ -1,10 +1,9 @@
 // https://nuxt.com/docs/api/configuration/nuxt-config
 export default defineNuxtConfig({
-  compatibilityDate: '2024-09-20',
+  compatibilityDate: "2024-09-20",
   devtools: { enabled: true },
-  modules: [
-    '@pinia/nuxt', '@nuxtjs/tailwindcss'
-  ],
+  modules: ["@pinia/nuxt", "@nuxtjs/tailwindcss"],
+  css: ["~/assets/css/main.css"],
   app: {
     head: {
       title: "Starter Site",
@@ -37,4 +36,4 @@ export default defineNuxtConfig({
       ],
     },
   },
-})
+});

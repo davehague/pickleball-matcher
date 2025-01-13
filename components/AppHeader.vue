@@ -9,8 +9,6 @@
         </div>
         <div class="flex space-x-4">
           <NuxtLink to="/" class="hover:text-gray-300 transition-colors duration-200">Home</NuxtLink>
-          <NuxtLink to="/about" class="hover:text-gray-300 transition-colors duration-200">About</NuxtLink>
-          <NuxtLink to="/contact" class="hover:text-gray-300 transition-colors duration-200">Contact</NuxtLink>
         </div>
       </div>
     </nav>
