@@ -1,18 +1,18 @@
 <template>
-  <div class="app-container">
-    <header>
-      <h1>App Title</h1>
-    </header>
-    <main>
+  <div class="flex flex-col min-h-screen">
+    <!-- Header -->
+    <AppHeader />
+
+    <!-- Main Content -->
+    <main class="flex-grow container mx-auto px-6 py-8">
       <slot />
     </main>
+
+    <!-- Footer -->
+    <AppFooter />
   </div>
 </template>
 
-<style scoped>
-.app-container {
-  max-width: 100%;
-  margin: 0 auto;
-  padding: 1rem;
-}
-</style>
+<script setup>
+// You can add any necessary imports or logic here
+</script>
