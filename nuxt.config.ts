@@ -2,7 +2,21 @@
 export default defineNuxtConfig({
   compatibilityDate: "2024-09-20",
   devtools: { enabled: true },
-  modules: ["@pinia/nuxt", "@nuxtjs/tailwindcss"],
+  devServer: {
+    https: {
+      key: "./localhost-key.pem",
+      cert: "./localhost.pem",
+    },
+  },
+  modules: [
+    "@pinia/nuxt",
+    "pinia-plugin-persistedstate/nuxt",
+    "@nuxtjs/tailwindcss",
+    "nuxt-vue3-google-signin",
+  ],
+  googleSignIn: {
+    clientId: process.env.NUXT_PUBLIC_GOOGLE_CLIENT_ID,
+  },
   css: ["~/assets/css/main.css"],
   postcss: {
     plugins: {
@@ -42,4 +56,4 @@ export default defineNuxtConfig({
       ],
     },
   },
-});
+} as any);

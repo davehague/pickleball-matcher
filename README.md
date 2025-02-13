@@ -1,14 +1,15 @@
 # Vue-Nuxt-Supabase Starter Project
 
-This is a starter project that combines Vue.js, Nuxt 3, Pinia for state management and Tailwind CSS for styling.
+This is an opinionated starter project that to quickly spin up Nuxt based web projects with Google OAuth, Supabase backend, and client side state management with Pinia.
 
 ## Features
 
-- Vue.js (latest version)
-- Nuxt 3
-- Pinia for state management
+- Vue.js (latest version) / Nuxt 3
+- [Supabase](https://supabase.com/) for data persistences (PaaS)
+- [Pinia](https://pinia.vuejs.org/ssr/nuxt.html) for state management (with [Pinia Persisted State](https://prazdevs.github.io/pinia-plugin-persistedstate/frameworks/nuxt.html))
 - Tailwind CSS for utility-first styling
 - Lucide Vue Next for icons
+- [Vue3-Google-Sign-In for authentication](https://vue3-google-signin.wavezync.com/guide/)
 
 ## Prerequisites
 
@@ -17,68 +18,83 @@ This is a starter project that combines Vue.js, Nuxt 3, Pinia for state manageme
 
 ## Getting Started
 
-1. Clone the repository:
+Clone the repository:
+
+```
+git clone [your-repo-url]
+cd vue-nuxt-supabase-starter
+```
+
+Install dependencies:
+
+```
+npm install
+```
+
+### Setting up Google Sign-In
+
+1. Go to the [Google Cloud Console](https://console.cloud.google.com/)
+2. Create a new project or select an existing one
+3. Go to the Credentials page
+4. Create an OAuth 2.0 Client ID
+   - Application type: Web application
+   - Add authorized JavaScript origins: `https://localhost:3000` (for development)
+   - Add authorized redirect URIs: `https://localhost:3000` (for development)
+5. Copy the Client ID and paste it into your `.env` file as `GOOGLE_CLIENT_ID`
+
+Local dev now requires HTTPS. Use `mkcert` to create local certificates:
+
+_**Note**: Install mkcert using chocolately (Windows) or Homebrew (Mac)_
+
+```
+mkcert localhost
+```
+
+Note: `nuxt.config.ts` is already set up to use the cert during local dev:
+
+```
+export default defineNuxtConfig({
+  devServer: {
+    https: {
+      key: './localhost-key.pem',
+      cert: './localhost.pem',
+    }
+  },
+```
+
+### Setting up Supabase
+
+1. Refer to [this gist](https://www.davehague.com/gists/5f694889f466d18c5b48fda89ddfc14a) to create a new schema on your Supabase project.
+2. Add the variables `SUPABASE_URL` and `SUPABASE_SERVICE_KEY` to your `.env` file
+3. Create the users table in your schema:
+
    ```
-   git clone [your-repo-url]
-   cd vue-nuxt-supabase-starter
+   CREATE TABLE <schema>.organizations (
+    id SERIAL PRIMARY KEY,
+    name VARCHAR(255) NOT NULL
+   );
+
+   -- Insert default organization
+   INSERT INTO <schema>.organizations (id, name)
+   VALUES (1, 'Default organization');
+
+   CREATE TABLE <schema>.users (
+   id SERIAL PRIMARY KEY,
+   organization_id INTEGER REFERENCES <schema>.organizations(id),
+   name VARCHAR(255) NOT NULL,
+   email VARCHAR(255) NOT NULL UNIQUE,
+   picture VARCHAR(1024),
+   created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+   updated_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+   last_login TIMESTAMPTZ DEFAULT NULL
+   );
+
+   -- Enable RLS on both tables
+   ALTER TABLE <schema>.organizations ENABLE ROW LEVEL SECURITY;
+   ALTER TABLE <schema>.users ENABLE ROW LEVEL SECURITY;
    ```
 
-2. Install dependencies:
-   ```
-   npm install
-   ```
-
-3. Run the development server:
-   ```
-   npm run dev
-   ```
-
-
-4. Open your browser and navigate to `http://localhost:3000`
-
-
-## Project Structure
-
-# Vue-Nuxt-Supabase Starter Project
-
-[Previous content remains the same...]
-
-## Project Structure
-
-Key files and directories include:
-
-- `components/`: Contains reusable Vue components like AppFooter and AppHeader.
-- `layouts/`: Contains the default layout used across pages.
-- `pages/`: Contains the route pages of your application.
-- `public/`: Holds static assets that are served directly.
-- `server/`: Contains server-side code and configuration.
-- `stores/`: Contains Pinia store files for state management.
-- `types/`: Holds TypeScript type definitions and interfaces.
-- `utils/`: Contains utility functions, including the Supabase client setup.
-- `app.vue`: The main application component.
-- `nuxt.config.ts`: Nuxt configuration file.
-- `package.json`: Project dependencies and scripts.
-- `tsconfig.json`: TypeScript configuration file.
-
-
-## Dependencies
-
-- Nuxt 3
-- Vue.js (latest)
-- Pinia
-- @pinia/nuxt
-- @nuxtjs/tailwindcss
-- lucide-vue-next
-
-## Configuration
-
-The project is configured with:
-
-- Nuxt 3 devtools enabled
-- Pinia module for state management
-- Tailwind CSS module for styling
-- Compatibility date set to 2024-09-20
-- Custom app head configuration including favicon and meta tags
+**Note**: We default to org_id = 1 in `UserService`, but modify as needed.
 
 ## Styling with Tailwind CSS
 
@@ -90,31 +106,15 @@ The project includes [Lucide](https://lucide.dev/) for icons. You can use these 
 
 ## Favicon
 
-To change the title and favicon, update `nuxt.config.ts`.  Create your own favicon at https://favicon.io/ and simply drop overtop of the files in the `public` folder.
-
+To change the title and favicon, update `nuxt.config.ts`. Create your own favicon at https://favicon.io/ and simply drop overtop of the files in the `public` folder.
 
 ## Environment Variables
 
 Create a `.env` file in the root directory of the project to store secret project variables.
 
 ```
-NUXT_PUBLIC_SUPABASE_URL=your_supabase_project_url
-NUXT_PUBLIC_SUPABASE_KEY=your_supabase_anon_key
+NUXT_PUBLIC_GOOGLE_CLIENT_ID=your_google_client_id
+SUPABASE_URL=your_supabase_project_url
+SUPABASE_KEY=your_supabase_anon_key
+SUPABASE_SCHEMA=your_supabase_schema
 ```
-
-### Important Notes:
-
-- Never commit your `.env` file to version control. It's already included in the `.gitignore` file to prevent accidental commits.
-- Use `NUXT_PUBLIC_` prefix for variables that need to be accessible on both server and client side in Nuxt 3.
-- For variables that should only be available on the server side, omit the `NUXT_PUBLIC_` prefix.
-- Always use environment variables for sensitive information like API keys, database credentials, etc.
-
-### Additional Environment Variables
-
-Depending on your project needs, you might want to add more environment variables. Some common ones include:
-
-- `NODE_ENV`: Typically set automatically, but you can override it for different environments (development, production, etc.)
-- `NUXT_PUBLIC_API_BASE_URL`: If you're using any external APIs
-- `NUXT_PUBLIC_SITE_URL`: Your site's URL, useful for generating sitemaps or absolute URLs
-
-Remember to update the `nuxt.config.ts` file to use these environment variables where needed.
