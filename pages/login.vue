@@ -13,35 +13,34 @@
 import { GoogleSignInButton, type CredentialResponse } from "vue3-google-signin";
 import { useAuthStore } from '@/stores/auth';
 import { useRouter } from 'vue-router';
+import type { User } from "~/types/interfaces";
 
 const authStore = useAuthStore();
 const router = useRouter();
 
 const handleLoginSuccess = async (response: CredentialResponse) => {
     const { credential } = response;
+    const api = useApi();
 
     if (!credential) {
         console.error("No credential found");
         return;
     }
 
-    // Decode the JWT to get user information
     const payload = JSON.parse(atob(credential.split('.')[1]));
 
     try {
-        // First, try to fetch the user
-        const fetchUserResponse = await fetch(`/api/database/users?email=${encodeURIComponent(payload.email)}`);
+        authStore.setAccessToken(credential);
 
-        let userData;
-
-        if (!fetchUserResponse.ok && fetchUserResponse.status === 404) {
-            // User doesn't exist, create new user with full Google OAuth data
-            const createUserResponse = await fetch('/api/database/users', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify({
+        try {
+            const userData = await api.get<User>('/api/database/users', {
+                params: { email: payload.email }
+            });
+            authStore.setUser(userData);
+        } catch (error) {
+            if (error instanceof Error && error.message.includes('404')) {
+                // Create new user
+                const userData = await api.post<User>('/api/database/users', {
                     email: payload.email,
                     email_verified: payload.email_verified,
                     name: payload.name,
@@ -49,43 +48,20 @@ const handleLoginSuccess = async (response: CredentialResponse) => {
                     given_name: payload.given_name,
                     family_name: payload.family_name,
                     locale: payload.locale
-                })
-            });
-
-            if (!createUserResponse.ok) {
-                throw new Error('Failed to create user');
+                });
+                authStore.setUser(userData);
+            } else {
+                throw error;
             }
-
-            userData = await createUserResponse.json();
-        } else {
-            userData = await fetchUserResponse.json();
-
-            // Update last login
-            await fetch('/api/database/users', {
-                method: 'PATCH',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify({
-                    id: userData.id,
-                    last_login: new Date()
-                })
-            });
         }
 
-        // Set user and token in the store
-        authStore.setUser(userData);
-        authStore.setAccessToken(credential);
-
-        // Navigate to home page
         router.push('/home');
     } catch (error) {
-        console.error("Failed to handle user authentication", error);
-        // You might want to show an error message to the user here
+        console.error("Authentication error:", error);
+        authStore.logout(); // Clear credentials if anything goes wrong
     }
 };
 
-// handle an error event
 const handleLoginError = () => {
     console.error("Login failed");
     // You might want to show an error message to the user here
