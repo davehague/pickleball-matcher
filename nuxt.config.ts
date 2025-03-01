@@ -26,7 +26,7 @@ export default defineNuxtConfig({
   },
   app: {
     head: {
-      title: "Starter Site",
+      title: "Pickleball Matcher",
       meta: [
         { charset: "utf-8" },
         { name: "viewport", content: "width=device-width, initial-scale=1" },
