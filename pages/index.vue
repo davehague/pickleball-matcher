@@ -1,54 +1,27 @@
+<!-- src/pages/index.vue -->
 <template>
-  <div class="min-h-screen bg-gray-100 py-6 flex flex-col justify-center sm:py-12">
-    <div class="relative py-3 sm:max-w-xl sm:mx-auto">
-      <div
-        class="absolute inset-0 bg-gradient-to-r from-cyan-400 to-light-blue-500 shadow-lg transform -skew-y-6 sm:skew-y-0 sm:-rotate-6 sm:rounded-3xl">
-      </div>
-      <div class="relative px-4 py-10 bg-white shadow-lg sm:rounded-3xl sm:p-20">
-        <div class="max-w-md mx-auto">
-          <div class="text-center">
-            <h1 class="text-4xl font-bold mb-2">Vue-Nuxt Starter</h1>
-            <p class="text-gray-600 mb-8">Launch your next project with the perfect tech stack</p>
-          </div>
-          <div class="divide-y divide-gray-200">
-            <div class="py-8 text-base leading-6 space-y-4 text-gray-700 sm:text-lg sm:leading-7">
-              <p>This starter project includes:</p>
-              <ul class="list-disc space-y-2 pl-4">
-                <li>Vue.js (latest version)</li>
-                <li>Nuxt 3</li>
-                <li>Pinia for state management</li>
-                <li>Supabase integration</li>
-                <li>Tailwind CSS for styling</li>
-                <li>Lucide Vue Next for icons</li>
-              </ul>
-            </div>
-            <div class="pt-6 text-base leading-6 sm:text-lg sm:leading-7">
-              <div class="flex flex-col items-center space-y-4">
-                <NuxtLink to="/login"
-                  class="w-full bg-gradient-to-r from-cyan-500 to-blue-500 text-white text-center px-6 py-3 rounded-lg font-semibold hover:from-cyan-600 hover:to-blue-600 transition-all duration-200 transform hover:-translate-y-0.5">
-                  Get Started Now
-                </NuxtLink>
-                <div class="flex space-x-4">
-                  <a href="https://nuxt.com/docs"
-                    class="text-cyan-600 hover:text-cyan-700 transition-colors duration-200">
-                    Explore Docs →
-                  </a>
-                  <a href="https://supabase.com/docs"
-                    class="text-cyan-600 hover:text-cyan-700 transition-colors duration-200">
-                    Learn Supabase →
-                  </a>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
-    </div>
-  </div>
+  <MatchesPage />
 </template>
 
-<script setup>
-definePageMeta({
-  layout: 'landing'
+<script lang="ts">
+import { defineComponent, onMounted } from 'vue'
+import MatchesPage from './matches.vue'
+
+export default defineComponent({
+  name: 'IndexPage',
+  components: {
+    MatchesPage
+  },
+  setup() {
+    onMounted(async () => {
+      try {
+        const response = await fetch('/api/database/db-time')
+        const data = await response.json()
+        console.log('Database response:', data)
+      } catch (err) {
+        console.error('Error fetching database time:', err)
+      }
+    })
+  }
 })
 </script>
