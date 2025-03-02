@@ -1,0 +1,90 @@
+|-- README.md
+|-- app.vue
+|-- assets
+|   |-- css
+|   |   |-- main.css
+|-- components
+|   |-- AppFooter.vue
+|   |-- AppHeader.vue
+|   |-- AvailabilityGrid.vue
+|   |-- GroupChat.vue
+|   |-- GroupInfo.vue
+|   |-- HostingResponsibilities.vue
+|   |-- LocationPreferenceItem.vue
+|   |-- LocationPreferences.vue
+|   |-- MatchCard.vue
+|   |-- MemberCard.vue
+|   |-- NotificationsPanel.vue
+|   |-- PreferencesSection.vue
+|   |-- ProfileHeader.vue
+|   |-- WeekSelector.vue
+|-- docs
+|   |-- db-tables.md
+|   |-- file-tree.txt
+|   |-- user-manual.md
+|-- fixtures
+|   |-- index.ts
+|-- layouts
+|   |-- default.vue
+|   |-- landing.vue
+|-- localhost-key.pem
+|-- localhost.pem
+|-- middleware
+|   |-- auth.global.ts
+|-- migrations
+|   |-- create.js
+|   |-- index.js
+|   |-- sql
+|   |   |-- 001-create-users-table.sql
+|   |   |-- 002-update-users-table.sql
+|   |   |-- 003-create-locations.sql
+|   |   |-- 004-create-availability.sql
+|   |   |-- 005-create-matches.sql
+|   |   |-- 006-create-groups.sql
+|   |   |-- 007-create-messages.sql
+|-- nuxt.config.ts
+|-- package-lock.json
+|-- package.json
+|-- pages
+|   |-- availability.vue
+|   |-- group.vue
+|   |-- home.vue
+|   |-- index.vue
+|   |-- login.vue
+|   |-- matches.vue
+|   |-- onboarding.vue
+|   |-- profile.vue
+|-- public
+|   |-- about.txt
+|   |-- android-chrome-192x192.png
+|   |-- android-chrome-512x512.png
+|   |-- apple-touch-icon.png
+|   |-- favicon-16x16.png
+|   |-- favicon-32x32.png
+|   |-- favicon.ico
+|   |-- pb-logo.png
+|   |-- placeholder.png
+|   |-- profile.png
+|   |-- robots.txt
+|   |-- site.webmanifest
+|-- server
+|   |-- api
+|   |   |-- database
+|   |   |   |-- db-time.ts
+|   |   |   |-- onboarding.ts
+|   |   |   |-- users.ts
+|   |-- services
+|   |   |-- UserService.ts
+|   |-- tsconfig.json
+|   |-- utils
+|   |   |-- auth.ts
+|-- stores
+|   |-- auth.ts
+|-- tailwind.config.ts
+|-- tsconfig.json
+|-- types
+|   |-- index.ts
+|   |-- interfaces.ts
+|-- utils
+|   |-- api.ts
+

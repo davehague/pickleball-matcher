@@ -1,11 +1,15 @@
-import { UserService } from "@/server/services/UserService";
-import { defineEventHandler, createError } from "h3";
-import { verifyAuth } from "@/server/utils/auth";
-import type { User, GoogleUser } from "@/types/interfaces";
+// server/api/database/users.ts
 
-interface UserQueryParams {
-  email?: string;
-}
+import { UserService } from "@/server/services/UserService";
+import { defineEventHandler, createError, getQuery, readBody } from "h3";
+import { verifyAuth } from "@/server/utils/auth";
+import type {
+  User,
+  GoogleUser,
+  LocationPreference,
+  AvailabilitySlot,
+  OnboardingData,
+} from "@/types/interfaces";
 
 const userService = new UserService();
 
@@ -17,11 +21,11 @@ export default defineEventHandler(async (event) => {
     let requestedEmail: string | undefined;
 
     if (event.method === "GET") {
-      const { email } = getQuery<UserQueryParams>(event);
-      requestedEmail = email;
+      const query = getQuery(event) as { email?: string };
+      requestedEmail = query.email;
     } else if (event.method === "POST") {
-      const body = await readBody<GoogleUser>(event);
-      requestedEmail = body.email;
+      const body = await readBody<GoogleUser | Partial<User>>(event);
+      requestedEmail = "email" in body ? body.email : undefined;
     }
 
     // Single verification for the endpoint
@@ -34,7 +38,9 @@ export default defineEventHandler(async (event) => {
 
     // Handle the specific methods
     if (event.method === "GET") {
-      const { email: queryEmail } = getQuery<UserQueryParams>(event);
+      const query = getQuery(event) as { email?: string };
+      const queryEmail = query.email;
+
       if (!queryEmail) {
         throw createError({
           statusCode: 400,
@@ -50,8 +56,17 @@ export default defineEventHandler(async (event) => {
     }
 
     if (event.method === "POST") {
-      const body = await readBody<GoogleUser>(event);
-      return await userService.createFromGoogle(body);
+      const body = await readBody(event);
+
+      // Check if it's a Google user signup
+      if ("email_verified" in body) {
+        return await userService.createFromGoogle(body as GoogleUser);
+      }
+
+      throw createError({
+        statusCode: 400,
+        message: "Invalid request body",
+      });
     }
 
     if (event.method === "PATCH") {

@@ -5,6 +5,7 @@ import { OAuth2Client } from "google-auth-library";
 const client = new OAuth2Client(process.env.NUXT_PUBLIC_GOOGLE_CLIENT_ID);
 
 interface AuthenticatedUser {
+  id: string;
   email: string;
   // Add other user properties you might need from the token
 }
@@ -45,8 +46,8 @@ export async function verifyAuth(event: H3Event): Promise<AuthenticatedUser> {
     }
 
     return {
+      id: payload.sub,
       email: payload.email,
-      // Add other user properties if needed
     };
   } catch (error) {
     console.error("Token verification failed:", error);

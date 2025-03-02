@@ -8,10 +8,3 @@ CREATE TABLE IF NOT EXISTS users (
     created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
     updated_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
 );
-
--- Add some sample data
-INSERT INTO users (email, name) VALUES 
-    ('user1@example.com', 'User One'),
-    ('user2@example.com', 'User Two'),
-    ('user3@example.com', 'User Three')
-ON CONFLICT (email) DO NOTHING;
