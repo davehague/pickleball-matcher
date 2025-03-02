@@ -31,16 +31,17 @@ const handleLoginSuccess = async (response: CredentialResponse) => {
 
     try {
         authStore.setAccessToken(credential);
-
+        console.log("Access token set:", credential);
         try {
             const userData = await api.get<User>('/api/database/users', {
                 params: { email: payload.email }
             });
-            authStore.setUser(userData);
-        } catch (error) {
-            if (error instanceof Error && error.message.includes('404')) {
+
+            // If the API returns an object with statusCode 404, we need to create a new user
+            if (userData && 'statusCode' in userData && userData.statusCode === 404) {
+                console.log("User not found, creating new user");
                 // Create new user
-                const userData = await api.post<User>('/api/database/users', {
+                const newUserData = await api.post<User>('/api/database/users', {
                     email: payload.email,
                     email_verified: payload.email_verified,
                     name: payload.name,
@@ -49,10 +50,14 @@ const handleLoginSuccess = async (response: CredentialResponse) => {
                     family_name: payload.family_name,
                     locale: payload.locale
                 });
-                authStore.setUser(userData);
+                authStore.setUser(newUserData);
             } else {
-                throw error;
+                console.log("User found:", userData);
+                authStore.setUser(userData);
             }
+        } catch (error) {
+            console.error("Error fetching/creating user:", error);
+            throw error;
         }
 
         router.push('/home');

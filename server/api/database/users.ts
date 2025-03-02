@@ -3,13 +3,7 @@
 import { UserService } from "@/server/services/UserService";
 import { defineEventHandler, createError, getQuery, readBody } from "h3";
 import { verifyAuth } from "@/server/utils/auth";
-import type {
-  User,
-  GoogleUser,
-  LocationPreference,
-  AvailabilitySlot,
-  OnboardingData,
-} from "@/types/interfaces";
+import type { User, GoogleUser } from "@/types/interfaces";
 
 const userService = new UserService();
 
@@ -49,9 +43,17 @@ export default defineEventHandler(async (event) => {
       }
 
       const user = await userService.findByEmail(queryEmail);
+
+      // Instead of throwing an error, just return a 404 status with a null user
+      // This prevents error logging while still indicating the user wasn't found
       if (!user) {
-        throw createError({ statusCode: 404, message: "User not found" });
+        return {
+          statusCode: 404,
+          body: null,
+          message: "User not found",
+        };
       }
+
       return user;
     }
 
