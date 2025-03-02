@@ -41,7 +41,7 @@ export default defineComponent({
     const route = useRoute()
 
     const tabs = [
-      { id: 'matches', name: 'Matches', path: '/' },
+      { id: 'matches', name: 'Matches', path: '/matches' },
       { id: 'availability', name: 'Set Availability', path: '/availability' },
       { id: 'group', name: 'Group', path: '/group' },
       { id: 'profile', name: 'Profile', path: '/profile' }

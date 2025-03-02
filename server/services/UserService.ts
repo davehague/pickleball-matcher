@@ -193,6 +193,7 @@ export class UserService {
           play_frequency = $5,
           avoid_consecutive_days = $6,
           willing_to_substitute = $7,
+          onboarding_completed = TRUE,
           updated_at = $8
         WHERE id = $9
         RETURNING *`,
@@ -244,6 +245,32 @@ export class UserService {
     }
   }
 
+  // Find user by ID
+  async findById(userId: string): Promise<User | null> {
+    console.log(`[UserService] Finding user by ID:`, userId);
+    try {
+      // First check if the ID is a valid UUID format
+      if (!this.isValidUUID(userId)) {
+        console.log(`[UserService] Invalid UUID format for user ID: ${userId}`);
+        return null;
+      }
+
+      const result = await client.query("SELECT * FROM users WHERE id = $1", [
+        userId,
+      ]);
+
+      if (result.rows.length === 0) {
+        console.log(`[UserService] User not found for ID: ${userId}`);
+        return null;
+      }
+
+      return result.rows[0];
+    } catch (error) {
+      console.error(`[UserService] Error finding user by ID:`, error);
+      throw error;
+    }
+  }
+
   // Get all locations
   async getLocations(): Promise<Location[]> {
     try {
@@ -260,6 +287,14 @@ export class UserService {
   // Get user's location preferences
   async getLocationPreferences(userId: string): Promise<LocationPreference[]> {
     try {
+      // Check if ID is a valid UUID format
+      if (!this.isValidUUID(userId)) {
+        console.log(
+          `[UserService] Invalid UUID format for user ID in location preferences: ${userId}`
+        );
+        return [];
+      }
+
       const result = await client.query(
         `SELECT ulp.* 
          FROM user_location_preferences ulp
@@ -271,6 +306,14 @@ export class UserService {
       console.error(`[UserService] Error getting location preferences:`, error);
       throw error;
     }
+  }
+
+  // Helper method to validate UUID format
+  isValidUUID(uuid: string): boolean {
+    // UUID format regex pattern
+    const uuidPattern =
+      /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
+    return uuidPattern.test(uuid);
   }
 
   // When your application is shutting down:

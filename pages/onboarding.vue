@@ -349,7 +349,7 @@ const prevStep = () => {
 };
 
 const goToDashboard = () => {
-    router.push('/home');
+    router.push('/matches');
 };
 
 const fetchLocationData = async () => {
@@ -511,7 +511,7 @@ const checkOnboardingStatus = () => {
         'play_frequency' in authStore.user &&
         authStore.user.play_frequency > 0
     ) {
-        router.push('/home');
+        router.push('/matches');
     }
 };
 

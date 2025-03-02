@@ -60,7 +60,7 @@ const handleLoginSuccess = async (response: CredentialResponse) => {
             throw error;
         }
 
-        router.push('/home');
+        router.push('/matches');
     } catch (error) {
         console.error("Authentication error:", error);
         authStore.logout(); // Clear credentials if anything goes wrong

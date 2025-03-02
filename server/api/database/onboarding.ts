@@ -3,13 +3,7 @@
 import { UserService } from "@/server/services/UserService";
 import { defineEventHandler, createError, readBody } from "h3";
 import { verifyAuth } from "@/server/utils/auth";
-import type {
-  User,
-  LocationPreference,
-  AvailabilitySlot,
-  OnboardingData,
-  OnboardingResponse,
-} from "@/types/interfaces";
+import type { OnboardingData, OnboardingResponse } from "@/types/interfaces";
 
 const userService = new UserService();
 
@@ -22,6 +16,14 @@ export default defineEventHandler(async (event) => {
       throw createError({
         statusCode: 401,
         message: "Unauthorized: User not authenticated",
+      });
+    }
+
+    // Validate the user ID format
+    if (!userService.isValidUUID(authenticatedUser.id)) {
+      throw createError({
+        statusCode: 400,
+        message: `Invalid user ID format: ${authenticatedUser.id}`,
       });
     }
 
@@ -46,18 +48,29 @@ export default defineEventHandler(async (event) => {
     }
 
     if (event.method === "GET") {
-      // Return data needed for onboarding flow
-      const locations = await userService.getLocations();
-      const locationPreferences = await userService.getLocationPreferences(
-        authenticatedUser.id
-      );
+      try {
+        // Return data needed for onboarding flow
+        const locations = await userService.getLocations();
+        const locationPreferences = await userService.getLocationPreferences(
+          authenticatedUser.id
+        );
 
-      const response: OnboardingResponse = {
-        locations,
-        locationPreferences,
-      };
+        const response: OnboardingResponse = {
+          locations,
+          locationPreferences,
+        };
 
-      return response;
+        return response;
+      } catch (error: any) {
+        console.error(`[API] Error fetching onboarding data:`, error);
+        // Return empty preferences but still provide locations to avoid breaking the UI
+        const locations = await userService.getLocations();
+
+        return {
+          locations,
+          locationPreferences: [],
+        };
+      }
     }
 
     throw createError({ statusCode: 405, message: "Method not allowed" });

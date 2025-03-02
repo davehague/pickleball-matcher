@@ -1,21 +1,22 @@
-// types/interfaces.ts - Updated to match the DB schema while maintaining compatibility
+// types/interfaces.ts
 
 export interface User {
   id: string;
   email: string;
   name: string;
-  phone?: string;
-  dupr_rating?: number;
+  phone?: string | null;
+  dupr_rating?: number | null;
   notification_email: boolean;
   notification_text: boolean;
   play_frequency: number;
   avoid_consecutive_days: boolean;
   willing_to_substitute: boolean;
-  picture?: string;
-  organization_id?: number; // For backward compatibility
+  picture?: string | null;
+  organization_id?: number | null; // Make explicitly nullable
   created_at?: Date | string;
   updated_at?: Date | string;
   last_login?: Date | string;
+  onboarding_completed?: boolean;
 }
 
 export interface GoogleUser {
@@ -26,6 +27,14 @@ export interface GoogleUser {
   given_name?: string;
   family_name?: string;
   locale?: string;
+  sub?: string;
+}
+
+export interface AuthenticatedUser {
+  id: string; // Our database UUID
+  email: string;
+  name?: string;
+  picture?: string;
 }
 
 export interface Location {
