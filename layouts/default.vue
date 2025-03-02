@@ -2,8 +2,13 @@
   <div class="flex flex-col min-h-screen bg-gray-50">
     <!-- Header -->
     <header class="bg-green-600 text-white p-4 shadow-md">
-      <div class="container mx-auto">
-        <h1 class="text-2xl font-bold">Pickleball Matcher</h1>
+      <div class="container mx-auto flex items-center">
+        <NuxtLink to="/">
+          <div class="flex items-center">
+            <img src="/pb-logo.png" alt="Pickleball Matcher Logo" class="h-8 w-8 mr-3">
+            <h1 class="text-2xl font-bold">Pickleball Matcher</h1>
+          </div>
+        </NuxtLink>
       </div>
     </header>
 
