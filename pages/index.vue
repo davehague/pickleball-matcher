@@ -27,8 +27,7 @@
             </div>
           </div>
           <div class="hidden md:block">
-            <img src="/pb-logo.png" alt="Pickleball players" class="w-full"
-              onerror="this.src='https://placehold.co/600x400?text=Pickleball+Matcher'" />
+            <img src="/pb-logo.png" alt="Pickleball players" class="w-full" />
           </div>
         </div>
       </div>
@@ -146,7 +145,7 @@
 </template>
 
 <script setup lang="ts">
-import { useRouter } from 'vue-router';
+import { navigateTo } from '#imports';
 import { definePageMeta } from '#imports';
 
 // Set this page to use the landing layout
@@ -154,9 +153,8 @@ definePageMeta({
   layout: 'landing'
 });
 
-const router = useRouter();
-
 const navigateToLogin = () => {
-  router.push('/login');
+  console.log('Navigating to login page');
+  navigateTo('/login');
 };
 </script>

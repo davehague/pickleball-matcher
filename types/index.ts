@@ -37,7 +37,6 @@ export interface GroupMember {
   id: number;
   name: string;
   dupr: number;
-  status: "online" | "offline";
   isAdmin: boolean;
 }
 
@@ -61,14 +60,6 @@ export interface GroupInformation {
   created: string;
   playLocations: string[];
   skillLevel: string;
-}
-
-// User profile types
-export interface User {
-  name: string;
-  email: string;
-  dupr: number;
-  initials: string;
 }
 
 export interface Location {

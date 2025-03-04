@@ -16,11 +16,6 @@
                 <div class="text-sm text-gray-500">DUPR {{ member.dupr }}</div>
             </div>
         </div>
-        <div class="flex items-center">
-            <div :class="`w-2 h-2 rounded-full mr-1 ${member.status === 'online' ? 'bg-green-500' : 'bg-gray-300'}`">
-            </div>
-            <span class="text-xs text-gray-500">{{ member.status === 'online' ? 'Online' : 'Offline' }}</span>
-        </div>
     </div>
 </template>
 

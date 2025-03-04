@@ -4,7 +4,7 @@
         <h2 class="text-xl font-semibold text-gray-800 mb-4">Your Profile</h2>
 
         <div class="bg-white rounded-lg shadow p-4">
-            <ProfileHeader :user="user" />
+            <ProfileHeader :user="user!" />
 
             <div class="space-y-4">
                 <LocationPreferences :locations="locations" @update-preference="updateLocationPreference" />
@@ -24,81 +24,64 @@
     </div>
 </template>
 
-<script lang="ts">
-import { defineComponent, ref } from 'vue'
-import type { User, Location, ContactInfo } from '~/types/index'
+<script setup lang="ts">
+import { ref } from 'vue'
+import type { Location, ContactInfo } from '~/types/index'
+import type { User } from '~/types/interfaces'
+import { useAuthStore } from '#imports'
 
-export default defineComponent({
-    name: 'ProfilePage',
-    setup() {
-        // User profile data
-        const user = ref<User>({
-            name: 'John Doe',
-            email: 'john.doe@example.com',
-            dupr: 4.2,
-            initials: 'JD'
-        })
+// User profile data
+let user = ref<User>();
+const authStore = useAuthStore();
 
-        // Location preferences
-        const locations = ref<Location[]>([
-            { id: 1, name: 'Downtown Courts', preference: 'Preferred' },
-            { id: 2, name: 'Sunset Park', preference: 'OK, but not preferred' },
-            { id: 3, name: 'Community Center', preference: 'Preferred' },
-            { id: 4, name: 'North Side Club', preference: 'Do not want to play here' }
-        ])
+user.value = authStore.user!;
 
-        // Notification preferences
-        const emailNotifications = ref(true)
-        const textNotifications = ref(false)
+// Location preferences
+const locations = ref<Location[]>([
+    { id: 1, name: 'Downtown Courts', preference: 'Preferred' },
+    { id: 2, name: 'Sunset Park', preference: 'OK, but not preferred' },
+    { id: 3, name: 'Community Center', preference: 'Preferred' },
+    { id: 4, name: 'North Side Club', preference: 'Do not want to play here' }
+])
 
-        // Contact information
-        const contactInfo = ref<ContactInfo>({
-            phone: '(555) 123-4567',
-            email: 'john.doe@example.com'
-        })
+// Notification preferences
+const emailNotifications = ref(true)
+const textNotifications = ref(false)
 
-        // Update methods
-        const updateLocationPreference = (locationId: number, newPreference: string) => {
-            const location = locations.value.find(loc => loc.id === locationId)
-            if (location) {
-                location.preference = newPreference
-            }
-        }
-
-        const updateEmailNotifications = (value: boolean) => {
-            emailNotifications.value = value
-        }
-
-        const updateTextNotifications = (value: boolean) => {
-            textNotifications.value = value
-        }
-
-        // Save profile
-        const saveProfile = () => {
-            // In a real app, this would send the updated profile to the server
-            console.log('Saving profile:', {
-                user: user.value,
-                locations: locations.value,
-                emailNotifications: emailNotifications.value,
-                textNotifications: textNotifications.value,
-                contactInfo: contactInfo.value
-            })
-
-            // Show success message (in a real app)
-            alert('Profile updated successfully!')
-        }
-
-        return {
-            user,
-            locations,
-            emailNotifications,
-            textNotifications,
-            contactInfo,
-            updateLocationPreference,
-            updateEmailNotifications,
-            updateTextNotifications,
-            saveProfile
-        }
-    }
+// Contact information
+const contactInfo = ref<ContactInfo>({
+    phone: user.value.phone || '',
+    email: user.value.email
 })
+
+// Update methods
+const updateLocationPreference = (locationId: number, newPreference: string) => {
+    const location = locations.value.find(loc => loc.id === locationId)
+    if (location) {
+        location.preference = newPreference
+    }
+}
+
+const updateEmailNotifications = (value: boolean) => {
+    emailNotifications.value = value
+}
+
+const updateTextNotifications = (value: boolean) => {
+    textNotifications.value = value
+}
+
+// Save profile
+const saveProfile = () => {
+    // In a real app, this would send the updated profile to the server
+    console.log('Saving profile:', {
+        user: user.value,
+        locations: locations.value,
+        emailNotifications: emailNotifications.value,
+        textNotifications: textNotifications.value,
+        contactInfo: contactInfo.value
+    })
+
+    // Show success message (in a real app)
+    alert('Profile updated successfully!')
+}
 </script>
