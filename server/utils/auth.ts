@@ -2,7 +2,7 @@
 import { H3Event, createError, getHeader } from "h3";
 import { OAuth2Client } from "google-auth-library";
 import { UserService } from "@/server/services/UserService";
-import { AuthenticatedUser } from "~/types/interfaces";
+import { AuthenticatedUser } from "~/types";
 
 const client = new OAuth2Client(process.env.NUXT_PUBLIC_GOOGLE_CLIENT_ID);
 const userService = new UserService();

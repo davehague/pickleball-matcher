@@ -18,7 +18,7 @@
 <script lang="ts">
 import { defineComponent, type PropType, computed } from 'vue'
 import { MapPin } from 'lucide-vue-next'
-import type { Location } from '~/types/index'
+import type { Location } from '~/types'
 
 export default defineComponent({
     name: 'LocationPreferenceItem',

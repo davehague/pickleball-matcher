@@ -18,7 +18,7 @@
 <script lang="ts">
 import { defineComponent, type PropType, computed } from 'vue'
 import { AlertCircle, Check } from 'lucide-vue-next'
-import type { Notification } from '~/types/index'
+import type { Notification } from '~/types'
 
 export default defineComponent({
     name: 'NotificationsPanel',

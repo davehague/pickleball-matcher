@@ -26,8 +26,8 @@
 
 <script setup lang="ts">
 import { ref } from 'vue'
-import type { Location, ContactInfo } from '~/types/index'
-import type { User } from '~/types/interfaces'
+import type { Location, ContactInfo } from '~/types'
+import type { User } from '~/types'
 import { useAuthStore } from '#imports'
 
 // User profile data

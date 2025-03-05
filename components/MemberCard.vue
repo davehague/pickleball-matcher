@@ -9,7 +9,7 @@
             <div>
                 <div class="flex items-center">
                     <div class="font-medium">{{ member.name }}</div>
-                    <span v-if="member.isAdmin" class="ml-2 text-xs bg-gray-100 text-gray-600 px-2 py-0.5 rounded">
+                    <span v-if="member.is_admin" class="ml-2 text-xs bg-gray-100 text-gray-600 px-2 py-0.5 rounded">
                         Admin
                     </span>
                 </div>
@@ -21,7 +21,7 @@
 
 <script lang="ts">
 import { defineComponent, type PropType } from 'vue'
-import type { GroupMember } from '~/types/index'
+import type { GroupMember } from '~/types'
 
 export default defineComponent({
     name: 'MemberCard',

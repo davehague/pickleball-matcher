@@ -21,7 +21,7 @@
 
 <script lang="ts">
 import { defineComponent, type PropType } from 'vue'
-import type { GroupInformation } from '~/types/index'
+import type { GroupInformation } from '~/types'
 
 export default defineComponent({
     name: 'GroupInfo',

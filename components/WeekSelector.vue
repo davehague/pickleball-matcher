@@ -18,7 +18,7 @@
 
 <script lang="ts">
 import { defineComponent, type PropType, ref, computed, watch } from 'vue'
-import type { Week } from '~/types/index'
+import type { Week } from '~/types'
 
 export default defineComponent({
     name: 'WeekSelector',

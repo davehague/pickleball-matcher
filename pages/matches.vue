@@ -65,7 +65,7 @@
 import { ref, computed } from 'vue';
 import { useRouter } from 'vue-router';
 import { useAuthStore } from '@/stores/auth';
-import type { Match, Notification } from '~/types/index';
+import type { Match, Notification } from '~/types';
 
 const authStore = useAuthStore();
 const router = useRouter();

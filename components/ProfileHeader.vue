@@ -17,7 +17,7 @@
 
 <script lang="ts">
 import { defineComponent, type PropType, computed } from 'vue'
-import type { User } from '~/types/interfaces'
+import type { User } from '~/types'
 
 export default defineComponent({
     name: 'ProfileHeader',

@@ -1,4 +1,4 @@
-// types/interfaces.ts
+// types/models.ts - Database-aligned model interfaces
 
 export interface User {
   id: string;
@@ -12,10 +12,8 @@ export interface User {
   avoid_consecutive_days: boolean;
   willing_to_substitute: boolean;
   picture?: string | null;
-  organization_id?: number | null; // Make explicitly nullable
   created_at?: Date | string;
   updated_at?: Date | string;
-  last_login?: Date | string;
   onboarding_completed?: boolean;
 }
 
@@ -30,13 +28,6 @@ export interface GoogleUser {
   sub?: string;
 }
 
-export interface AuthenticatedUser {
-  id: string; // Our database UUID
-  email: string;
-  name?: string;
-  picture?: string;
-}
-
 export interface Location {
   id: string;
   name: string;
@@ -49,7 +40,7 @@ export interface Location {
   updated_at?: Date | string;
 }
 
-export interface LocationPreference {
+export interface UserLocationPreference {
   id?: string;
   user_id: string;
   location_id: string;
@@ -65,6 +56,27 @@ export interface AvailabilitySlot {
   day_of_week: number; // 0-6 (Monday-Sunday)
   hour_slot: number; // 0-23
   availability_type: "Available" | "Preferred" | "Unavailable";
+  created_at?: Date | string;
+  updated_at?: Date | string;
+}
+
+export interface Match {
+  id: string;
+  location_id: string;
+  date: string | Date;
+  time: string;
+  status: "Proposed" | "Confirmed" | "Completed" | "Cancelled";
+  host_user_id?: string;
+  created_at?: Date | string;
+  updated_at?: Date | string;
+}
+
+export interface MatchPlayer {
+  id?: string;
+  match_id: string;
+  user_id: string;
+  confirmation_status: "Pending" | "Confirmed" | "Declined";
+  is_substitute: boolean;
   created_at?: Date | string;
   updated_at?: Date | string;
 }
@@ -86,6 +98,14 @@ export interface GroupMember {
   updated_at?: Date | string;
 }
 
+export interface GroupLocation {
+  id: string;
+  groupId: string;
+  locationId: string;
+  createdAt: Date;
+  updatedAt: Date;
+}
+
 export interface HostRotation {
   id?: string;
   user_id: string;
@@ -95,32 +115,18 @@ export interface HostRotation {
   updated_at?: Date | string;
 }
 
-// For the onboarding flow
-export interface OnboardingData {
-  // Step 1: Basic Info
-  basicInfo: {
-    phone?: string;
-    dupr_rating?: number;
-    notification_email: boolean;
-    notification_text: boolean;
-  };
-
-  // Step 2: Play Preferences
-  playPreferences: {
-    play_frequency: number;
-    avoid_consecutive_days: boolean;
-    willing_to_substitute: boolean;
-  };
-
-  // Step 3: Location Preferences
-  locationPreferences: LocationPreference[];
-
-  // Step 4: Availability
-  availability: AvailabilitySlot[];
+export interface ChatMessage {
+  id: string;
+  group_id: string;
+  user_id: string;
+  message: string;
+  created_at: Date | string;
 }
 
-// API response types
-export interface OnboardingResponse {
-  locations: Location[];
-  locationPreferences: LocationPreference[];
+export interface MatchMessage {
+  id: string;
+  match_id: string;
+  user_id: string;
+  message: string;
+  created_at: Date | string;
 }

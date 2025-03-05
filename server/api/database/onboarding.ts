@@ -3,7 +3,7 @@
 import { UserService } from "@/server/services/UserService";
 import { defineEventHandler, createError, readBody } from "h3";
 import { verifyAuth } from "@/server/utils/auth";
-import type { OnboardingData, OnboardingResponse } from "@/types/interfaces";
+import type { OnboardingData, OnboardingResponse } from "~/types";
 
 const userService = new UserService();
 

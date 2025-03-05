@@ -207,8 +207,8 @@ import { ref, computed, onMounted } from 'vue';
 import { useRouter } from 'vue-router';
 import { useAuthStore } from '@/stores/auth';
 import { Check as CheckIcon, X as XIcon } from 'lucide-vue-next';
-import type { User, Location, LocationPreference, AvailabilitySlot, OnboardingResponse } from '@/types/interfaces';
-import type { Week, Availability } from '@/types/index';
+import type { User, Location, UserLocationPreference, AvailabilitySlot, OnboardingResponse } from '~/types';
+import type { Week, Availability } from '@/types';
 
 const router = useRouter();
 const authStore = useAuthStore();
@@ -221,7 +221,7 @@ const isLoading = ref(false);
 const isSubmitting = ref(false);
 const selectedWeek = ref(new Date());
 const locations = ref<Location[]>([]);
-const locationPreferences = ref<LocationPreference[]>([]);
+const locationPreferences = ref<UserLocationPreference[]>([]);
 const userId = ref<string>('');
 
 // For availability grid
@@ -321,7 +321,7 @@ const onboardingData = ref({
         avoid_consecutive_days: false,
         willing_to_substitute: false
     },
-    locationPreferences: [] as LocationPreference[],
+    locationPreferences: [] as UserLocationPreference[],
     availability: [] as AvailabilitySlot[]
 });
 

@@ -30,7 +30,7 @@
 <script lang="ts">
 import { defineComponent, type PropType } from 'vue'
 import { Check as CheckIcon, X as XIcon } from 'lucide-vue-next'
-import type { Availability } from '~/types/index'
+import type { Availability } from '~/types'
 
 export default defineComponent({
     name: 'AvailabilityGrid',

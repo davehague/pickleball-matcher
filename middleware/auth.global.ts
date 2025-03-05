@@ -1,4 +1,4 @@
-import type { User } from "~/types/interfaces";
+import type { User } from "~/types";
 
 // auth.global.ts
 export default defineNuxtRouteMiddleware((to) => {

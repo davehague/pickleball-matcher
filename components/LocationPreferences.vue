@@ -11,7 +11,7 @@
 
 <script lang="ts">
 import { defineComponent, type PropType } from 'vue'
-import type { Location } from '~/types/index'
+import type { Location } from '~/types'
 import LocationPreferenceItem from '@/components/LocationPreferenceItem.vue'
 
 export default defineComponent({

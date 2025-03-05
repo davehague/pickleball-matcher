@@ -60,7 +60,7 @@
 <script lang="ts">
 import { defineComponent, type PropType } from 'vue'
 import { Calendar, Clock, MapPin, Users } from 'lucide-vue-next'
-import type { Match } from '~/types/index'
+import type { Match } from '~/types'
 
 export default defineComponent({
     name: 'MatchCard',

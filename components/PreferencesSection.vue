@@ -33,7 +33,7 @@
 
 <script lang="ts">
 import { defineComponent, type PropType } from 'vue'
-import type { ContactInfo } from '~/types/index'
+import type { ContactInfo } from '~/types'
 
 export default defineComponent({
     name: 'PreferencesSection',

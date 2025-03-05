@@ -3,7 +3,7 @@
 import { UserService } from "@/server/services/UserService";
 import { defineEventHandler, createError, getQuery, readBody } from "h3";
 import { verifyAuth } from "@/server/utils/auth";
-import type { User, GoogleUser } from "@/types/interfaces";
+import type { User, GoogleUser } from "~/types";
 
 const userService = new UserService();
 

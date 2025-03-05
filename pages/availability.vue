@@ -46,7 +46,7 @@
 
 <script lang="ts">
 import { defineComponent, ref } from 'vue'
-import type { Availability, Week } from '~/types/index'
+import type { Availability, Week } from '~/types'
 
 export default defineComponent({
     name: 'AvailabilityPage',
