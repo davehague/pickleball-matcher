@@ -7,6 +7,7 @@ import type {
   GroupMember,
   GroupLocation,
   User,
+  GroupInvitation,
 } from "~/types";
 import pkg from "pg";
 const { Client } = pkg;
@@ -220,6 +221,117 @@ export class GroupService {
       return result.rows[0];
     } catch (error) {
       console.error(`[GroupService] Error updating group member:`, error);
+      throw error;
+    }
+  }
+
+  async getGroupInvitations(groupId: string): Promise<GroupInvitation[]> {
+    console.log(`[GroupService] Getting invitations for group:`, groupId);
+    try {
+      const result = await client.query(
+        `SELECT gi.*, u.name as invited_by_name 
+         FROM group_invitations gi
+         JOIN users u ON gi.invited_by = u.id 
+         WHERE gi.group_id = $1`,
+        [groupId]
+      );
+      return result.rows;
+    } catch (error) {
+      console.error(`[GroupService] Error getting group invitations:`, error);
+      throw error;
+    }
+  }
+
+  // Create a new invitation
+  async createGroupInvitation(
+    invitation: GroupInvitation
+  ): Promise<GroupInvitation> {
+    console.log(`[GroupService] Creating invitation for:`, invitation.email);
+    try {
+      // Set expiration date to 7 days from now
+      const expiresAt = new Date();
+      expiresAt.setDate(expiresAt.getDate() + 7);
+
+      const result = await client.query(
+        `INSERT INTO group_invitations 
+         (group_id, email, invited_by, status, expires_at) 
+         VALUES ($1, $2, $3, $4, $5) 
+         ON CONFLICT (group_id, email) DO UPDATE
+         SET invited_by = $3, status = $4, expires_at = $5, created_at = CURRENT_TIMESTAMP
+         RETURNING *`,
+        [
+          invitation.group_id,
+          invitation.email,
+          invitation.invited_by,
+          "Pending",
+          expiresAt,
+        ]
+      );
+      return result.rows[0];
+    } catch (error) {
+      console.error(`[GroupService] Error creating invitation:`, error);
+      throw error;
+    }
+  }
+
+  // Delete an invitation
+  async deleteGroupInvitation(id: string): Promise<void> {
+    console.log(`[GroupService] Deleting invitation:`, id);
+    try {
+      await client.query(`DELETE FROM group_invitations WHERE id = $1`, [id]);
+    } catch (error) {
+      console.error(`[GroupService] Error deleting invitation:`, error);
+      throw error;
+    }
+  }
+
+  // Process an invitation (accept or reject)
+  async processInvitation(
+    token: string,
+    action: "accept" | "reject",
+    userId?: string
+  ): Promise<{ groupId: string; success: boolean }> {
+    console.log(`[GroupService] Processing invitation with token:`, token);
+    try {
+      // Begin transaction
+      await client.query("BEGIN");
+
+      // Get the invitation
+      const invitationResult = await client.query(
+        `SELECT * FROM group_invitations WHERE token = $1 AND status = 'Pending'`,
+        [token]
+      );
+
+      if (invitationResult.rows.length === 0) {
+        await client.query("ROLLBACK");
+        return { groupId: "", success: false };
+      }
+
+      const invitation = invitationResult.rows[0];
+
+      // Update invitation status
+      await client.query(
+        `UPDATE group_invitations SET status = $1 WHERE id = $2`,
+        [action === "accept" ? "Accepted" : "Rejected", invitation.id]
+      );
+
+      // If accepting, add user to group_members
+      if (action === "accept" && userId) {
+        await client.query(
+          `INSERT INTO group_members (group_id, user_id, is_admin) 
+           VALUES ($1, $2, false) 
+           ON CONFLICT (group_id, user_id) DO NOTHING`,
+          [invitation.group_id, userId]
+        );
+      }
+
+      // Commit transaction
+      await client.query("COMMIT");
+
+      return { groupId: invitation.group_id, success: true };
+    } catch (error) {
+      await client.query("ROLLBACK");
+      console.error(`[GroupService] Error processing invitation:`, error);
       throw error;
     }
   }

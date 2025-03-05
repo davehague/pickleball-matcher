@@ -130,3 +130,14 @@ export interface MatchMessage {
   message: string;
   created_at: Date | string;
 }
+
+export interface GroupInvitation {
+  id?: string;
+  group_id: string;
+  email: string;
+  invited_by: string;
+  status: "Pending" | "Accepted" | "Rejected" | "Expired";
+  token?: string;
+  created_at?: Date | string;
+  expires_at?: Date | string;
+}

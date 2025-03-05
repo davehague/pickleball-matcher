@@ -3,7 +3,12 @@
 import { GroupService } from "@/server/services/GroupService";
 import { defineEventHandler, createError, getQuery, readBody } from "h3";
 import { verifyAuth } from "@/server/utils/auth";
-import type { Group, GroupLocation, GroupMember } from "~/types";
+import type {
+  Group,
+  GroupLocation,
+  GroupMember,
+  GroupInvitation,
+} from "~/types";
 
 const groupService = new GroupService();
 
@@ -17,14 +22,36 @@ export default defineEventHandler(async (event) => {
         userId?: string;
         groupId?: string;
         type?: string;
+        token?: string;
       };
 
       // If no query parameters, throw error
-      if (!query.userId && !query.groupId) {
+      if (!query.userId && !query.groupId && !query.token) {
         throw createError({
           statusCode: 400,
-          message: "Either userId or groupId parameter is required",
+          message: "Either userId, groupId, or token parameter is required",
         });
+      }
+
+      // Process invitation via token
+      if (query.token) {
+        const result = await groupService.processInvitation(
+          query.token,
+          "accept",
+          authenticatedUser.id
+        );
+
+        if (!result.success) {
+          throw createError({
+            statusCode: 400,
+            message: "Invalid or expired invitation token",
+          });
+        }
+
+        return {
+          message: "Invitation accepted successfully",
+          groupId: result.groupId,
+        };
       }
 
       // Get groups for a user
@@ -57,6 +84,25 @@ export default defineEventHandler(async (event) => {
             return await groupService.getLocationsForGroup(query.groupId);
           case "members":
             return await groupService.getMembersForGroup(query.groupId);
+          case "invitations":
+            // Verify user is an admin of the group
+            const groupMembers = await groupService.getMembersForGroup(
+              query.groupId
+            );
+            const isAdmin = groupMembers.some(
+              (member) =>
+                member.userDetails.id === authenticatedUser.id &&
+                member.is_admin
+            );
+
+            if (!isAdmin) {
+              throw createError({
+                statusCode: 403,
+                message: "Forbidden: Only group admins can view invitations",
+              });
+            }
+
+            return await groupService.getGroupInvitations(query.groupId);
           default:
             throw createError({
               statusCode: 400,
@@ -77,6 +123,34 @@ export default defineEventHandler(async (event) => {
       // Add location to group
       if ("locationId" in body && "groupId" in body) {
         return await groupService.addGroupLocation(body as GroupLocation);
+      }
+
+      // Send invitation to join group
+      if ("email" in body && "groupId" in body) {
+        // Verify user is an admin of the group
+        const groupMembers = await groupService.getMembersForGroup(
+          body.groupId
+        );
+        const isAdmin = groupMembers.some(
+          (member) =>
+            member.userDetails.id === authenticatedUser.id && member.is_admin
+        );
+
+        if (!isAdmin) {
+          throw createError({
+            statusCode: 403,
+            message: "Forbidden: Only group admins can send invitations",
+          });
+        }
+
+        const invitation: GroupInvitation = {
+          group_id: body.groupId,
+          email: body.email,
+          invited_by: authenticatedUser.id,
+          status: "Pending",
+        };
+
+        return await groupService.createGroupInvitation(invitation);
       }
 
       // Add member to group
@@ -163,6 +237,7 @@ export default defineEventHandler(async (event) => {
         groupId?: string;
         userId?: string;
         locationId?: string;
+        invitationId?: string;
       };
 
       if (!query.groupId) {
@@ -204,9 +279,16 @@ export default defineEventHandler(async (event) => {
         return { message: "Member removed from group" };
       }
 
+      // Cancel invitation
+      if (query.invitationId) {
+        await groupService.deleteGroupInvitation(query.invitationId);
+        return { message: "Invitation cancelled" };
+      }
+
       throw createError({
         statusCode: 400,
-        message: "Either userId or locationId parameter is required",
+        message:
+          "Either userId, locationId, or invitationId parameter is required",
       });
     }
 
