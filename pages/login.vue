@@ -13,7 +13,7 @@
 import { GoogleSignInButton, type CredentialResponse } from "vue3-google-signin";
 import { useAuthStore } from '@/stores/auth';
 import { useRouter } from 'vue-router';
-import type { User } from "~/types/interfaces";
+import type { User, Group } from "~/types";
 
 const authStore = useAuthStore();
 const router = useRouter();
@@ -32,16 +32,18 @@ const handleLoginSuccess = async (response: CredentialResponse) => {
     try {
         authStore.setAccessToken(credential);
         console.log("Access token set:", credential);
+
+        let userData: User;
         try {
-            const userData = await api.get<User>('/api/database/users', {
+            const response = await api.get<User>('/api/database/users', {
                 params: { email: payload.email }
             });
 
             // If the API returns an object with statusCode 404, we need to create a new user
-            if (userData && 'statusCode' in userData && userData.statusCode === 404) {
+            if (response && 'statusCode' in response && response.statusCode === 404) {
                 console.log("User not found, creating new user");
                 // Create new user
-                const newUserData = await api.post<User>('/api/database/users', {
+                userData = await api.post<User>('/api/database/users', {
                     email: payload.email,
                     email_verified: payload.email_verified,
                     name: payload.name,
@@ -50,17 +52,37 @@ const handleLoginSuccess = async (response: CredentialResponse) => {
                     family_name: payload.family_name,
                     locale: payload.locale
                 });
-                authStore.setUser(newUserData);
             } else {
-                console.log("User found:", userData);
-                authStore.setUser(userData);
+                console.log("User found:", response);
+                userData = response as User;
+            }
+
+            authStore.setUser(userData);
+
+            // Fetch user's groups after successful login/creation
+            try {
+                const userGroups = await api.get<Group[]>('/api/database/groups', {
+                    params: { userId: userData.id }
+                });
+                console.log("User groups fetched:", userGroups);
+                authStore.setGroups(userGroups);
+
+                // Navigate based on group status
+                if (userGroups.length === 0) {
+                    // If no groups, go to onboarding
+                    router.push('/onboarding');
+                } else {
+                    // Otherwise go to matches
+                    router.push('/matches');
+                }
+            } catch (error) {
+                console.error("Error fetching user groups:", error);
+                throw error;
             }
         } catch (error) {
             console.error("Error fetching/creating user:", error);
             throw error;
         }
-
-        router.push('/matches');
     } catch (error) {
         console.error("Authentication error:", error);
         authStore.logout(); // Clear credentials if anything goes wrong

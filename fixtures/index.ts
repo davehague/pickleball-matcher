@@ -5,7 +5,6 @@ import type {
   Week,
   GroupMember,
   ChatMessage,
-  GroupInformation,
   Location,
   ContactInfo,
   User,
@@ -133,13 +132,6 @@ export const chatMessages: ChatMessage[] = [
     timestamp: "Today, 8:22 AM",
   },
 ];
-
-// Sample group information
-export const groupInfo: GroupInformation = {
-  created: "January 15, 2025",
-  playLocations: ["Downtown Courts", "Sunset Park", "Community Center"],
-  skillLevel: "Intermediate to Advanced (DUPR 3.5-4.7)",
-};
 
 // Sample user profile
 export const user: User = {

@@ -34,7 +34,7 @@ export interface Location {
   address: string;
   phone?: string;
   url?: string;
-  is_indoor: boolean;
+  court_type: string;
   pricing_info?: string;
   created_at?: Date | string;
   updated_at?: Date | string;

@@ -75,12 +75,6 @@ export interface ChatMessageDisplay {
   timestamp: string;
 }
 
-export interface GroupInformation {
-  created: string;
-  playLocations: string[];
-  skillLevel: string;
-}
-
 export interface ContactInfo {
   phone: string;
   email: string;

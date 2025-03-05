@@ -8,7 +8,6 @@
 |   |-- AppHeader.vue
 |   |-- AvailabilityGrid.vue
 |   |-- GroupChat.vue
-|   |-- GroupInfo.vue
 |   |-- HostingResponsibilities.vue
 |   |-- LocationPreferenceItem.vue
 |   |-- LocationPreferences.vue
@@ -18,9 +17,14 @@
 |   |-- PreferencesSection.vue
 |   |-- ProfileHeader.vue
 |   |-- WeekSelector.vue
+|   |-- group
+|   |   |-- AddLocationsModal.vue
+|   |   |-- LocationCard.vue
+|   |   |-- LocationsSection.vue
 |-- docs
-|   |-- db-tables.md
+|   |-- db-schema.md
 |   |-- file-tree.txt
+|   |-- locations.sql
 |   |-- user-manual.md
 |-- fixtures
 |   |-- index.ts
@@ -42,13 +46,17 @@
 |   |   |-- 005-create-matches.sql
 |   |   |-- 006-create-groups.sql
 |   |   |-- 007-create-messages.sql
+|   |   |-- 008-add-picture-column.sql
+|   |   |-- 009-add-cascade-deletes.sql
+|   |   |-- 010-add-onboarding-field.sql
+|   |   |-- 011-add-group-locations.sql
+|   |   |-- 012-update-locations.sql
 |-- nuxt.config.ts
 |-- package-lock.json
 |-- package.json
 |-- pages
 |   |-- availability.vue
 |   |-- group.vue
-|   |-- home.vue
 |   |-- index.vue
 |   |-- login.vue
 |   |-- matches.vue
@@ -71,9 +79,13 @@
 |   |-- api
 |   |   |-- database
 |   |   |   |-- db-time.ts
+|   |   |   |-- groups.ts
+|   |   |   |-- locations.ts
 |   |   |   |-- onboarding.ts
 |   |   |   |-- users.ts
 |   |-- services
+|   |   |-- GroupService.ts
+|   |   |-- LocationService.ts
 |   |   |-- UserService.ts
 |   |-- tsconfig.json
 |   |-- utils
@@ -83,8 +95,8 @@
 |-- tailwind.config.ts
 |-- tsconfig.json
 |-- types
+|   |-- display.ts
 |   |-- index.ts
-|   |-- interfaces.ts
+|   |-- models.ts
 |-- utils
 |   |-- api.ts
-
