@@ -3,12 +3,10 @@
 import type {
   User,
   GoogleUser,
-  LocationPreference,
+  UserLocationPreference,
   AvailabilitySlot,
-  GroupMember,
-  HostRotation,
   Location,
-} from "@/types/interfaces";
+} from "@/types";
 import pkg from "pg";
 const { Client } = pkg;
 
@@ -177,7 +175,7 @@ export class UserService {
     playFrequency: number,
     avoidConsecutiveDays: boolean,
     willingToSubstitute: boolean,
-    locationPreferences: LocationPreference[],
+    locationPreferences: UserLocationPreference[],
     availabilitySlots: AvailabilitySlot[]
   ): Promise<User> {
     try {
@@ -284,8 +282,67 @@ export class UserService {
     }
   }
 
-  // Get user's location preferences
-  async getLocationPreferences(userId: string): Promise<LocationPreference[]> {
+  async updateLocationPreferences(
+    userId: string,
+    preferences: UserLocationPreference[]
+  ): Promise<void> {
+    console.log(
+      `[UserService] Updating location preferences for user:`,
+      userId
+    );
+
+    try {
+      // Start a transaction
+      await client.query("BEGIN");
+
+      for (const pref of preferences) {
+        // Check if a preference already exists for this user and location
+        const existingResult = await client.query(
+          "SELECT id FROM user_location_preferences WHERE user_id = $1 AND location_id = $2",
+          [userId, pref.location_id]
+        );
+
+        if (existingResult.rows.length > 0) {
+          // Update existing preference
+          await client.query(
+            `UPDATE user_location_preferences 
+             SET preference = $1, updated_at = CURRENT_TIMESTAMP
+             WHERE id = $2`,
+            [pref.preference, existingResult.rows[0].id]
+          );
+        } else {
+          // Create new preference
+          await client.query(
+            `INSERT INTO user_location_preferences 
+             (user_id, location_id, preference) 
+             VALUES ($1, $2, $3)`,
+            [userId, pref.location_id, pref.preference]
+          );
+        }
+      }
+
+      // Commit the transaction
+      await client.query("COMMIT");
+      console.log(
+        `[UserService] Successfully updated location preferences for user: ${userId}`
+      );
+    } catch (error) {
+      // Rollback in case of error
+      await client.query("ROLLBACK");
+      console.error(
+        `[UserService] Error updating location preferences:`,
+        error
+      );
+      throw error;
+    }
+  }
+
+  // Updated version of your existing getLocationPreferences method for clarity
+  async getLocationPreferences(
+    userId: string
+  ): Promise<UserLocationPreference[]> {
+    console.log(`[UserService] Getting location preferences for user:`, userId);
+
     try {
       // Check if ID is a valid UUID format
       if (!this.isValidUUID(userId)) {
@@ -296,14 +353,43 @@ export class UserService {
       }
 
       const result = await client.query(
-        `SELECT ulp.* 
-         FROM user_location_preferences ulp
-         WHERE ulp.user_id = $1`,
+        `SELECT * FROM user_location_preferences WHERE user_id = $1`,
         [userId]
+      );
+
+      console.log(
+        `[UserService] Retrieved ${result.rows.length} location preferences for user: ${userId}`
       );
       return result.rows;
     } catch (error) {
       console.error(`[UserService] Error getting location preferences:`, error);
+      throw error;
+    }
+  }
+
+  // Method to get locations with user preferences
+  async getLocationsWithPreferences(userId: string): Promise<any[]> {
+    console.log(
+      `[UserService] Getting locations with preferences for user:`,
+      userId
+    );
+
+    try {
+      const result = await client.query(
+        `SELECT l.*, ulp.preference
+         FROM locations l
+         LEFT JOIN user_location_preferences ulp 
+           ON l.id = ulp.location_id AND ulp.user_id = $1
+         ORDER BY l.name`,
+        [userId]
+      );
+
+      return result.rows;
+    } catch (error) {
+      console.error(
+        `[UserService] Error getting locations with preferences:`,
+        error
+      );
       throw error;
     }
   }

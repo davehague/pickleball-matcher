@@ -1,21 +1,25 @@
 // server/api/database/locations.ts
 
 import { LocationService } from "@/server/services/LocationService";
+import { UserService } from "@/server/services/UserService";
 import { defineEventHandler, createError, getQuery, readBody } from "h3";
 import { verifyAuth } from "@/server/utils/auth";
 import type { Location } from "~/types";
 
 const locationService = new LocationService();
+const userService = new UserService();
 
 export default defineEventHandler(async (event) => {
   try {
     // Validate the user is authenticated
-    await verifyAuth(event);
+    const authenticatedUser = await verifyAuth(event);
 
     if (event.method === "GET") {
       const query = getQuery(event) as {
         id?: string;
         search?: string;
+        withPreferences?: boolean | string;
+        userId?: string;
       };
 
       // Get a specific location by ID
@@ -28,6 +32,19 @@ export default defineEventHandler(async (event) => {
           });
         }
         return location;
+      }
+
+      // Get locations with user preferences
+      if (query.withPreferences && query.userId) {
+        // Security check - only allow fetching own preferences
+        if (query.userId !== authenticatedUser.id) {
+          throw createError({
+            statusCode: 403,
+            message: "You can only access your own preferences",
+          });
+        }
+
+        return await userService.getLocationsWithPreferences(query.userId);
       }
 
       // Search locations

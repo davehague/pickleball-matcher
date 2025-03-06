@@ -26,17 +26,10 @@
                 </button>
             </div>
         </div>
-        <div v-if="member.userDetails.dupr_rating" class="mt-2 text-sm">
-            <span class="font-medium">DUPR Rating:</span> {{ member.userDetails.dupr_rating }}
-        </div>
-        <div v-if="member.userDetails.phone" class="mt-1 text-sm">
-            <span class="font-medium">Phone:</span> {{ member.userDetails.phone }}
-        </div>
     </div>
 </template>
 
 <script setup lang="ts">
-import { defineProps, defineEmits } from 'vue';
 import { useAuthStore } from '@/stores/auth';
 import type { GroupUser } from '~/types';
 

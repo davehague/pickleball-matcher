@@ -16,6 +16,12 @@ export const useAuthStore = defineStore(
       user.value = newUser;
     }
 
+    function updateUser(updatedUser: Partial<User>) {
+      if (user.value) {
+        user.value = { ...user.value, ...updatedUser };
+      }
+    }
+
     function setAccessToken(token: string) {
       accessToken.value = token;
     }
@@ -37,6 +43,7 @@ export const useAuthStore = defineStore(
       currentGroup,
       isAuthenticated,
       setUser,
+      updateUser,
       setAccessToken,
       setGroups,
       logout,
