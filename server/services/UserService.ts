@@ -107,13 +107,13 @@ export class UserService {
           [newUser.id, 0]
         );
 
-        // 4. Set default location preferences to "OK" for all locations
+        // 4. Set default location preferences to "No preference" for all locations
         const locationsResult = await client.query("SELECT id FROM locations");
 
         for (const location of locationsResult.rows) {
           await client.query(
             "INSERT INTO user_location_preferences (user_id, location_id, preference) VALUES ($1, $2, $3)",
-            [newUser.id, location.id, "OK"]
+            [newUser.id, location.id, "None"]
           );
         }
 

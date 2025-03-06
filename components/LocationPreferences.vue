@@ -125,7 +125,12 @@ const loadLocationsAndPreferences = async () => {
             params: { withPreferences: 'true', userId: props.userId }
         });
 
-        locations.value = response;
+        // Set default preference to "None" for locations without a preference
+        console.log('LocationWithPreference response', response);
+        locations.value = response.map(loc => ({
+            ...loc,
+            preference: loc.preference || "None"
+        }));
     } catch (error) {
         console.error('Error loading locations and preferences:', error);
     } finally {
