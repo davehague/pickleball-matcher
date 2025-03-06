@@ -4,9 +4,9 @@
     <AppHeader />
 
     <!-- Navigation - only show if onboarding is completed -->
-    <nav v-if="showNavigation" class="bg-white shadow-sm">
-      <div class="container mx-auto flex space-x-1">
-        <NuxtLink v-for="tab in tabs" :key="tab.id" :to="tab.path" :class="`p-4 font-medium ${activeTab === tab.id
+    <nav v-if="showNavigation" class="bg-white shadow-sm overflow-x-auto">
+      <div class="container mx-auto flex">
+        <NuxtLink v-for="tab in tabs" :key="tab.id" :to="tab.path" :class="`px-3 py-3 md:px-4 md:py-4 font-medium text-sm md:text-base whitespace-nowrap ${activeTab === tab.id
           ? 'text-green-600 border-b-2 border-green-600'
           : 'text-gray-600'
           }`">
@@ -16,12 +16,12 @@
     </nav>
 
     <!-- Main Content -->
-    <main class="flex-grow container mx-auto p-4">
+    <main class="flex-grow container mx-auto p-3 md:p-4">
       <slot />
     </main>
 
     <!-- Footer -->
-    <footer class="bg-white p-4 border-t border-gray-200 text-center text-gray-500 text-sm">
+    <footer class="bg-white p-3 md:p-4 border-t border-gray-200 text-center text-gray-500 text-xs md:text-sm">
       Pickleball Matcher • Group Play Made Simple
     </footer>
   </div>

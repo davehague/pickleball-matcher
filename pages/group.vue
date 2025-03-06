@@ -2,26 +2,12 @@
     <div class="space-y-6">
 
         <!-- Group Info -->
-        <section class="bg-white rounded-lg shadow p-4">
-            <h3 class="text-lg font-medium text-gray-700 mb-3">Group Information</h3>
-            <div v-if="loading" class="flex justify-center items-center p-4">
-                <div class="animate-spin rounded-full h-8 w-8 border-b-2 border-gray-900"></div>
-            </div>
-            <div v-else class="space-y-4">
-                <div>
-                    <div class="font-medium text-gray-700">Description</div>
-                    <p class="text-gray-600">{{ currentGroup?.description || 'No description available' }}</p>
-                </div>
-                <div>
-                    <div class="font-medium text-gray-700">Created</div>
-                    <p class="text-gray-600">{{ formatDate(currentGroup?.created_at) }}</p>
-                </div>
-            </div>
-        </section>
-
-        <div class="flex justify-between items-center">
+        <div class="my-4">
             <h2 class="text-xl font-semibold text-gray-800">{{ currentGroup?.name }}</h2>
-            <div class="text-sm text-gray-500">{{ members.length }} members</div>
+            <div class="flex justify-between items-center">
+                <p class="text-gray-600">{{ currentGroup?.description || '' }}</p>
+                <div class="text-sm text-gray-500">{{ members.length }} members</div>
+            </div>
         </div>
 
         <!-- Group Members -->

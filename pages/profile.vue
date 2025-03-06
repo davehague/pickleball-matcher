@@ -1,7 +1,7 @@
 // src/pages/profile.vue
 <template>
     <div class="space-y-6">
-        <h2 class="text-xl font-semibold text-gray-800 mb-4">Your Profile</h2>
+        <h2 class="text-xl font-semibold text-gray-800 mb-4">Profile</h2>
 
         <div class="bg-white rounded-lg shadow p-4">
             <ProfileHeader :user="user" />
