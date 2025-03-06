@@ -10,8 +10,11 @@ export const useAuthStore = defineStore(
     const userGroups = ref<Group[]>([]);
 
     const isAuthenticated = computed(() => !!user.value && !!accessToken.value);
-    const currentGroup = computed(() => userGroups.value[0] || null); // Default to first group
 
+    const currentGroup = computed(() => {
+      const group = userGroups.value[0] || null;
+      return group && group.id ? group : null;
+    });
     function setUser(newUser: User) {
       user.value = newUser;
     }

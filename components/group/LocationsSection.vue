@@ -31,27 +31,38 @@
 </template>
 
 <script setup lang="ts">
-import { ref, onMounted } from 'vue';
+import { ref, onMounted, watch } from 'vue';
 import type { Location } from '~/types';
+import AddLocationsModal from '@/components/group/AddLocationsModal.vue';
+import LocationCard from './LocationCard.vue';
 
-const props = defineProps<{
-    groupId: string;
-    isAdmin: boolean;
-}>();
+const props = defineProps({
+    groupId: {
+        type: String,
+        required: true,
+        // Ensure valid string
+        validator: (val: unknown) => typeof val === 'string' && val.length > 0
+    },
+    isAdmin: {
+        type: Boolean,
+        default: false
+    }
+});
 
 const api = useApi();
 const loading = ref(true);
 const showAddModal = ref(false);
 const groupLocations = ref<Location[]>([]);
-import AddLocationsModal from '@/components/group/AddLocationsModal.vue';
-import LocationCard from './LocationCard.vue';
 
 const openAddLocationsModal = () => {
     showAddModal.value = true;
 };
 
 const loadLocations = async () => {
+    if (!props.groupId) return; // Skip loading if groupId is not valid
+
     try {
+        loading.value = true;
         const response = await api.get<Location[]>('/api/database/groups', {
             params: {
                 groupId: props.groupId,
@@ -71,6 +82,8 @@ const handleLocationAdded = async () => {
 };
 
 const handleRemoveLocation = async (locationId: string) => {
+    if (!props.groupId) return; // Skip if groupId is not valid
+
     try {
         await api.delete('/api/database/groups', {
             params: {
@@ -84,5 +97,16 @@ const handleRemoveLocation = async (locationId: string) => {
     }
 };
 
-onMounted(loadLocations);
+// Watch for changes in groupId
+watch(() => props.groupId, (newGroupId) => {
+    if (newGroupId) {
+        loadLocations();
+    }
+});
+
+onMounted(() => {
+    if (props.groupId) {
+        loadLocations();
+    }
+});
 </script>

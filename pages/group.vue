@@ -40,10 +40,10 @@
         </section>
 
         <template v-if="isAdmin">
-            <section class="space-y-6">
-                <InvitationForm :group-id="currentGroup?.id" @invitation-sent="handleInvitationSent" />
+            <section class="space-y-6" v-if="currentGroup?.id">
+                <InvitationForm :group-id="currentGroup.id" @invitation-sent="handleInvitationSent" />
 
-                <InvitationsList ref="invitationsList" :group-id="currentGroup?.id"
+                <InvitationsList ref="invitationsList" :group-id="currentGroup.id"
                     @invitation-cancelled="handleInvitationCancelled" />
             </section>
         </template>
@@ -52,7 +52,7 @@
         <!-- <GroupChat :messages="messages" @send-message="sendMessage" /> -->
 
         <!-- Locations Section -->
-        <LocationsSection :group-id="currentGroup?.id" :is-admin="isAdmin" />
+        <LocationsSection v-if="currentGroup && currentGroup.id" :group-id="currentGroup.id" :is-admin="isAdmin" />
 
         <!-- Alert for success/error messages -->
         <div v-if="alert.show"
