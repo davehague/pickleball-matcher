@@ -23,8 +23,8 @@
                 </div>
             </div>
 
-            <!-- Contact Information -->
-            <div>
+            <!-- Contact Information - only shown when text notifications are enabled -->
+            <div v-if="textNotifications" class="ml-4 animate-fadeIn">
                 <label for="phone" class="block text-sm font-medium text-gray-700">Phone Number</label>
                 <input type="tel" id="phone" :value="phone"
                     @input="$emit('update-phone', ($event.target as HTMLInputElement).value)"
@@ -50,3 +50,21 @@ defineEmits<{
     (e: 'update-phone', value: string): void;
 }>();
 </script>
+
+<style scoped>
+.animate-fadeIn {
+    animation: fadeIn 0.3s ease-in-out;
+}
+
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(10px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+</style>

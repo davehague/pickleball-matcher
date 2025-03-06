@@ -3,8 +3,8 @@
     <!-- Header (now uses AppHeader component) -->
     <AppHeader />
 
-    <!-- Navigation -->
-    <nav class="bg-white shadow-sm">
+    <!-- Navigation - only show if onboarding is completed -->
+    <nav v-if="showNavigation" class="bg-white shadow-sm">
       <div class="container mx-auto flex space-x-1">
         <NuxtLink v-for="tab in tabs" :key="tab.id" :to="tab.path" :class="`p-4 font-medium ${activeTab === tab.id
           ? 'text-green-600 border-b-2 border-green-600'
@@ -30,6 +30,7 @@
 <script lang="ts">
 import { defineComponent, computed } from 'vue'
 import { useRoute } from 'vue-router'
+import { useAuthStore } from '~/stores/auth'
 import AppHeader from '~/components/AppHeader.vue'
 
 export default defineComponent({
@@ -39,6 +40,7 @@ export default defineComponent({
   },
   setup() {
     const route = useRoute()
+    const authStore = useAuthStore()
 
     const tabs = [
       { id: 'matches', name: 'Matches', path: '/matches' },
@@ -61,9 +63,15 @@ export default defineComponent({
       return tab ? tab.id : 'matches'
     })
 
+    // Only show navigation if user is authenticated and has completed onboarding
+    const showNavigation = computed(() => {
+      return authStore.isAuthenticated && authStore.user?.onboarding_completed === true
+    })
+
     return {
       tabs,
-      activeTab
+      activeTab,
+      showNavigation
     }
   }
 })

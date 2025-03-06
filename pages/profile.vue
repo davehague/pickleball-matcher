@@ -20,10 +20,9 @@
                         <div>
                             <label for="duprRating" class="block text-sm font-medium text-gray-700 mb-1">DUPR
                                 Rating</label>
-                            <input type="number" id="duprRating" v-model="duprRating" step="0.1" min="1.0" max="8.0"
+                            <input type="number" id="duprRating" v-model="duprRating" step="0.1" min="2.0" max="8.0"
                                 class="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-green-500 focus:border-green-500"
-                                placeholder="Your DUPR rating (1.0-8.0)" />
-                            <p class="text-xs text-gray-500 mt-1">DUPR ratings typically range from 1.0 to 8.0</p>
+                                placeholder="Your DUPR rating (2.0-8.0)" />
                         </div>
                     </div>
                 </div>

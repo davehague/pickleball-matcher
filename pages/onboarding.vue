@@ -1,7 +1,7 @@
 <!-- pages/onboarding.vue -->
 <template>
     <div class="min-h-screen bg-gray-100 py-6 px-4 sm:px-6 lg:px-8">
-        <div class="max-w-2xl mx-auto bg-white rounded-lg shadow p-6">
+        <div class="max-w-2xl mx-auto bg-white rounded-lg shadow p-6 mt-8">
             <!-- Progress Bar -->
             <div class="mb-8">
                 <div class="flex justify-between mb-2">
@@ -26,20 +26,9 @@
             <div v-if="currentStep === 1" class="space-y-6">
                 <!-- Step 1: Contact Information -->
                 <div>
-                    <label for="phone" class="block text-sm font-medium text-gray-700">Phone Number (for text
-                        notifications)</label>
-                    <input type="tel" id="phone" v-model="onboardingData.basicInfo.phone" placeholder="555-123-4567"
+                    <label for="name" class="block text-sm font-medium text-gray-700">Your Name</label>
+                    <input type="text" id="name" v-model="onboardingData.basicInfo.name" placeholder="Your full name"
                         class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-green-500 focus:ring-green-500" />
-                </div>
-
-                <div>
-                    <label for="dupr" class="block text-sm font-medium text-gray-700">DUPR Rating</label>
-                    <input type="number" id="dupr" v-model="onboardingData.basicInfo.dupr_rating" step="0.1" min="1.0"
-                        max="8.0" placeholder="3.5"
-                        class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-green-500 focus:ring-green-500" />
-                    <p class="mt-1 text-sm text-gray-500">
-                        Your DUPR rating helps others identify players of similar skill level.
-                    </p>
                 </div>
 
                 <div class="space-y-4">
@@ -58,6 +47,24 @@
                         <label for="notificationText" class="ml-2 block text-sm text-gray-700">Text
                             Notifications</label>
                     </div>
+                </div>
+
+                <!-- Phone number field only shown when text notifications are enabled -->
+                <div v-if="onboardingData.basicInfo.notification_text" class="ml-4 mb-8 animate-fadeIn">
+                    <label for="phone" class="block text-sm font-medium text-gray-700">Phone Number (for text
+                        notifications)</label>
+                    <input type="tel" id="phone" v-model="onboardingData.basicInfo.phone" placeholder="555-123-4567"
+                        class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-green-500 focus:ring-green-500" />
+                </div>
+
+                <div>
+                    <label for="dupr" class="block text-sm font-medium text-gray-700">DUPR Rating</label>
+                    <input type="number" id="dupr" v-model="onboardingData.basicInfo.dupr_rating" step="0.1" min="2.0"
+                        max="8.0" placeholder="3.5"
+                        class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-green-500 focus:ring-green-500" />
+                    <p class="mt-1 text-sm text-gray-500">
+                        Your DUPR rating helps others identify players of similar skill level.
+                    </p>
                 </div>
             </div>
 
@@ -175,7 +182,7 @@
 </template>
 
 <script setup lang="ts">
-import { ref, computed, onMounted } from 'vue';
+import { ref, computed, onMounted, watch } from 'vue';
 import { useRouter } from 'vue-router';
 import { useAuthStore } from '@/stores/auth';
 import { Check as CheckIcon, X as XIcon } from 'lucide-vue-next';
@@ -285,6 +292,7 @@ const currentStepTitle = computed(() => {
 // Initialize onboarding data
 const onboardingData = ref({
     basicInfo: {
+        name: '',
         phone: '',
         dupr_rating: undefined as number | undefined,
         notification_email: true,
@@ -297,6 +305,13 @@ const onboardingData = ref({
     },
     locationPreferences: [] as UserLocationPreference[],
     availability: [] as AvailabilitySlot[]
+});
+
+// When text notifications are disabled, clear the phone number
+watch(() => onboardingData.value.basicInfo.notification_text, (newValue) => {
+    if (!newValue) {
+        onboardingData.value.basicInfo.phone = '';
+    }
 });
 
 // Methods
@@ -443,7 +458,7 @@ const submitOnboarding = async () => {
     }
 };
 
-// Check if user already onboarded
+// Check if user already onboarded and pre-fill data if available
 const checkOnboardingStatus = () => {
     if (!authStore.user) {
         router.push('/login');
@@ -452,6 +467,22 @@ const checkOnboardingStatus = () => {
 
     // Store the user ID for future use
     userId.value = authStore.user.id;
+
+    // Pre-fill name from auth if available
+    if (authStore.user.name) {
+        onboardingData.value.basicInfo.name = authStore.user.name;
+    }
+
+    // Pre-fill other fields if available
+    if (authStore.user.phone) {
+        onboardingData.value.basicInfo.phone = authStore.user.phone;
+        // If they have a phone number, they probably want text notifications
+        onboardingData.value.basicInfo.notification_text = true;
+    }
+
+    if (authStore.user.dupr_rating) {
+        onboardingData.value.basicInfo.dupr_rating = authStore.user.dupr_rating;
+    }
 
     // If user has already set key preferences, redirect to dashboard
     if (
