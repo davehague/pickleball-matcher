@@ -1,23 +1,5 @@
 <template>
     <div class="space-y-6">
-        <!-- User Welcome Section -->
-        <div class="bg-white rounded-lg shadow p-4 mb-6">
-            <div class="flex items-center space-x-4">
-                <img :src="authStore.user?.picture ?? ''" :alt="authStore.user?.name ?? ''"
-                    class="w-12 h-12 rounded-full">
-                <div>
-                    <h1 class="text-xl font-bold">Welcome, {{ authStore.user?.name }}!</h1>
-                    <p class="text-gray-600 text-sm">{{ currentDateRange }}</p>
-                </div>
-                <div class="ml-auto">
-                    <button @click="handleLogout"
-                        class="text-sm bg-red-500 text-white px-3 py-1 rounded hover:bg-red-600 transition-colors">
-                        Logout
-                    </button>
-                </div>
-            </div>
-        </div>
-
         <!-- Hosting Info -->
         <HostingResponsibilities :host-date="hostingDate" :responsibilities="hostingResponsibilities" />
 
